@@ -39,8 +39,10 @@
                         <p class="card-text">This section allows you to start and stop the network interface.</p>
                         <div class="col-md-12 row">
                             <div class="col-md-6">
-                                <select class="form-select" name="num_records" id="num-records">
-                                    <option value="0">Number of records</option>
+                                <label>Number of records to display</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-control" name="num_records" id="num-records">
                                     <option value="10">10</option>
                                     <option value="25">25</option>
                                     <option value="50">50</option>
@@ -52,7 +54,10 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <select class="form-select me-2" id="networkInterfaceSelect">
+                                <label>Interface to monitor</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-control me-2" id="networkInterfaceSelect">
                                     {% for interface in interfaces %}
                                     <option selected>{{ interface }}</option>
                                     {% empty %}
@@ -60,6 +65,21 @@
                                     {% endfor %}
                                 </select>
                             </div>
+
+                            <div class="col-md-6">
+                                <label>Prediction model</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-control me-2" id="modelName">
+                                    <option selected value="decision_tree_model.pkl">Decission Tree</option>
+                                    <option value="gb_model.pkl">Gradient Boosting</option>
+                                    <option value="ada_model.pkl">Adaptive Boosting</option>
+                                    <option value="knn_model.pkl">K-Nearest Neighbors</option>
+                                    <option value="svm_model.pkl">Support Vector Machine</option>
+                                    <option value="gnb_model.pkl">Guassian Naive Bayes</option>
+                                </select>
+                            </div>
+
                             <div class="col-md-6">
                                 <br />
                                 <button class="btn btn-primary me-2" id="startButton">Start</button>
@@ -103,11 +123,13 @@
             
             $("#startButton").click(function(){
                 var selectedInterface = $("#networkInterfaceSelect").val();
+                var modelName = $("#modelName").val();
                 $.ajax({
                     type: "POST",
                     url: "/start_interface",
                     data: {
-                        interface: selectedInterface
+                        interface: selectedInterface,
+                        model_name: modelName,
                     },
                     success: function(response){
                         toastr["success"](response.message);
@@ -177,6 +199,9 @@
                             }
                             if (response.settings.interface != null && response.settings.interface != "" && response.settings.interface != "False"){
                                 $("#networkInterfaceSelect").val(response.settings.interface);
+                            }
+                            if (response.settings.model_name != null && response.settings.model_name != "" && response.settings.model_name != "False"){
+                                $("#modelName").val(response.settings.model_name);
                             }
                         }
                     });

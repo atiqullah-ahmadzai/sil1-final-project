@@ -59,7 +59,12 @@ def predict_traffic(json_data):
     ]
     data = [json_data[feature] for feature in feature_names]
     X = np.array(data).reshape(1, -1)
-    model = joblib.load('models/decision_tree_model.pkl')
+    
+    model_name = get_config('model_name')
+    if model_name != None:
+        model = joblib.load(f'models/{model_name}')
+    else:
+        model = joblib.load('models/decision_tree_model.pkl')
 
     prediction = model.predict(X)
     return prediction[0]

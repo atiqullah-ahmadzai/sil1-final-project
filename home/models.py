@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class FlowData(models.Model):
@@ -32,3 +33,11 @@ class Settings(models.Model):
 
     def __str__(self):
         return self.name
+    
+class UserSettings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    allowed_ip   = models.CharField(max_length=255, blank=True)
+    allowed_port = models.JSONField(blank=True)
+    
+    def __str__(self):
+        return f"{self.user.username}'s Settings"

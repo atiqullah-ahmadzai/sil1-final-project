@@ -7,15 +7,21 @@ from home.helpers import *
 import subprocess
 import sys
 import os
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.shortcuts import redirect
+from .decorators import login_required
+from django.contrib.auth import login
+from django.contrib.auth import logout
+from django.contrib import messages
 
-## Login page ##
-def login(request):
-    return render(request, 'main/login.html')
-
+@login_required
 def home(request):
+    print(request.user)
     interfaces = get_interfaces()
     return render(request, 'main/index.html', {'interfaces': interfaces})
 
+@login_required
 @api_view(['GET', 'POST'])
 def post_flow(request):
     if request.method == 'POST':
@@ -32,33 +38,37 @@ def post_flow(request):
     else:
         return Response({"message": "Got some data!"})
 
+@login_required
 @api_view(['POST'])
 def start_interface(request):
-    interface = request.data.get('interface')
+    interface  = request.data.get('interface')
+    model_name = request.data.get('model_name')
+    
     process   = start_cicflowmeter(interface)
 
     create_config('interface',interface)
     create_config('cic_status',True)
+    create_config('model_name',model_name)
     
     return Response({"message": "Monitoring has started started!"})
 
+@login_required
 @api_view(['GET'])
 def clear_db(request):
     FlowData.objects.all().delete()
     return Response({"message": "Database is cleared!"})
 
-
+@login_required
 @api_view(['GET'])
 def stop_interface(request):
     
     stop_cicflowmeter()
-            
-    create_config('interface',False)
+
     create_config('cic_status',False)
     
     return Response({"message": "cicflowmeter has been stopped!"})
 
-
+@login_required
 @api_view(['GET'])
 def get_data(request):
     
@@ -82,6 +92,7 @@ def get_data(request):
     settings = {}
     settings["cic_status"] = check_cic_process()
     settings["interface"]  = get_config('interface')
+    settings["model_name"] = get_config('model_name')
     
     rsp = {}
     rsp["data"]     = list(data)
@@ -89,13 +100,53 @@ def get_data(request):
     rsp["settings"] = settings
     rsp["blocked"]  = list(blocked)
     
-    print("Data:", rsp)
 
     return Response(rsp)
 
 
 ## Users Page Functions ##
+@login_required
 def users(request):
     return render(request, 'main/users.html')
+
+@login_required
+def create_user(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        email    = request.POST['email']
+        user = User.objects.create_user(username, email, password)
+        user.save()
+        return render(request, 'main/users.html')
+    else:
+        return render(request, 'main/create_user.html')
+
+
+## login functions ##
+def login_page(request):
+    # if already logged in
+    if request.user.is_authenticated:
+        return redirect('/')
+    else:
+        return render(request, 'main/login.html')
+
+def check_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, "Successfully logged in!")
+            return redirect('/')
+        else:
+            messages.error(request, "Invalid email or password")
+            return redirect('/login')
+    else:
+        return redirect('/login')
+
+def logout_func(request):
+    logout(request)
+    return redirect('/login')
     
     

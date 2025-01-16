@@ -8,7 +8,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addUserForm">
+                <form id="addUserForm" action="add_user" method="POST">
+                    
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required />
@@ -18,16 +19,67 @@
                         <input type="text" class="form-control" id="username" name="username" required />
                     </div>
                     <div class="form-group">
-                        <label for="allowed_ips">Allowed IPs</label>
-                        <input type="text" class="form-control" id="allowed_ips" name="allowed_ips" required />
+                        <label for="allowed_ips">Allowed IPs (Enter for new IP)</label>
+                        <textarea class="form-control" id="allowed_ips" name="allowed_ips" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="allowed_ports">Allowed Ports</label>
-                        <input type="text" class="form-control" id="allowed_ports" name="allowed_ports" required />
+                        <label for="allowed_ports">Allowed Ports (Enter for new Port)</label>
+                        <input type="checkbox" checked>
+                        <textarea class="form-control" id="allowed_ports" name="allowed_ports" required></textarea>
                     </div>
+                    {% csrf_token %}
                     <button type="submit" class="btn btn-primary">Add User</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<script>
+$(document).ready(function(){
+    function validateIP(ip){
+        var ipRegex = new RegExp("^([0-9]{1,3}\.){3}[0-9]{1,3}$");
+        return ipRegex.test(ip);
+    }
+    function validatePort(port){
+        var portRegex = new RegExp("^[0-9]{1,5}$");
+        return portRegex.test(port);
+    }
+    $("#allowed_ips").on("change",function(){
+        //validate IPs by breaking lines and checking each line
+        var ips = $(this).val().split("\n");
+        var valid = true;
+        for(var i=0;i<ips.length;i++){
+            if(ips[i].trim() == ""){
+                continue;
+            }
+            if(!validateIP(ips[i].trim())){
+                valid = false;
+                break;
+            }
+        }
+        if(!valid)
+        {
+            toastr.error("Invalid IP Addresses");
+        }
+    });
+
+    $("#allowed_ports").on("change",function(){
+        //validate Ports by breaking lines and checking each line
+        var ports = $(this).val().split("\n");
+        var valid = true;
+        for(var i=0;i<ports.length;i++){
+            if(ports[i].trim() == ""){
+                continue;
+            }
+            if(validatePort(ports[i].trim())){
+                valid = false;
+                break;
+            }
+        }
+        if(!valid)
+        {
+            toastr.error("Invalid Ports");
+        }
+    });
+});
+</script>
