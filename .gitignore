@@ -58,6 +58,3 @@ __pycache__/
 .vscode/
 .idea/
 *.swp
-
-models/
-models/*
