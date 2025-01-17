@@ -8,24 +8,25 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addUserForm" action="add_user" method="POST">
+                <form id="addUserForm" action="users/create" method="POST">
                     
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required />
+                        <input type="email" value="a@a.com" class="form-control" id="email" name="email" required />
                     </div>
                     <div class="form-group">
-                        <label for="username">Password</label>
-                        <input type="text" class="form-control" id="username" name="username" required />
+                        <label for="password">Password</label>
+                        <input type="password" value="a" class="form-control" id="password" name="password" required />
                     </div>
                     <div class="form-group">
                         <label for="allowed_ips">Allowed IPs (Enter for new IP)</label>
-                        <textarea class="form-control" id="allowed_ips" name="allowed_ips" required></textarea>
+                        <input id="allowed_ips_check" type="checkbox">
+                        <textarea class="form-control" id="allowed_ips" name="allowed_ips" required disabled></textarea>
                     </div>
                     <div class="form-group">
                         <label for="allowed_ports">Allowed Ports (Enter for new Port)</label>
-                        <input type="checkbox" checked>
-                        <textarea class="form-control" id="allowed_ports" name="allowed_ports" required></textarea>
+                        <input id="allowed_ports_check" type="checkbox">
+                        <textarea class="form-control" id="allowed_ports" name="allowed_ports" required disabled></textarea>
                     </div>
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">Add User</button>
@@ -36,11 +37,15 @@
 </div>
 <script>
 $(document).ready(function(){
+    var ip_valid = true;
+    var port_valid = true;
+
     function validateIP(ip){
         var ipRegex = new RegExp("^([0-9]{1,3}\.){3}[0-9]{1,3}$");
         return ipRegex.test(ip);
     }
     function validatePort(port){
+        // fix regex for port validation
         var portRegex = new RegExp("^[0-9]{1,5}$");
         return portRegex.test(port);
     }
@@ -48,12 +53,14 @@ $(document).ready(function(){
         //validate IPs by breaking lines and checking each line
         var ips = $(this).val().split("\n");
         var valid = true;
+        ip_valid = true;
         for(var i=0;i<ips.length;i++){
             if(ips[i].trim() == ""){
                 continue;
             }
             if(!validateIP(ips[i].trim())){
                 valid = false;
+                ip_valid = false;
                 break;
             }
         }
@@ -67,12 +74,14 @@ $(document).ready(function(){
         //validate Ports by breaking lines and checking each line
         var ports = $(this).val().split("\n");
         var valid = true;
+        port_valid = true;
         for(var i=0;i<ports.length;i++){
             if(ports[i].trim() == ""){
                 continue;
             }
-            if(validatePort(ports[i].trim())){
+            if(!validatePort(ports[i].trim())){
                 valid = false;
+                port_valid = false;
                 break;
             }
         }
@@ -81,5 +90,34 @@ $(document).ready(function(){
             toastr.error("Invalid Ports");
         }
     });
+
+    $("#allowed_ports_check").on("change",function(){
+        if($(this).is(":checked")){
+            $("#allowed_ports").prop("disabled",false);
+        }else{
+            $("#allowed_ports").prop("disabled",true);
+        }
+    });
+
+    $("#allowed_ips_check").on("change",function(){
+        if($(this).is(":checked")){
+            $("#allowed_ips").prop("disabled",false);
+        }else{
+            $("#allowed_ips").prop("disabled",true);
+        }
+    });
+
+    // validate form before submitting id addUserForm
+    $("#addUserForm").on("submit",function(e){
+        if(!ip_valid || !port_valid){
+            e.preventDefault();
+            toastr.error("Invalid IP Addresses or Ports");
+        }
+        else
+        {
+            return true;
+        }
+    });
+
 });
 </script>

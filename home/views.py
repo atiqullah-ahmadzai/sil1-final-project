@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import FlowData, FirewallStatus, Settings
+from .models import FlowData, FirewallStatus, Settings, UserSettings
 from home.helpers import *
 import subprocess
 import sys
@@ -107,20 +107,69 @@ def get_data(request):
 ## Users Page Functions ##
 @login_required
 def users(request):
-    return render(request, 'main/users.html')
+
+    users = UserSettings.objects.all()
+    return render(request, 'main/users.html', {'users': users})
 
 @login_required
 def create_user(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        email    = request.POST['email']
-        user = User.objects.create_user(username, email, password)
-        user.save()
-        return render(request, 'main/users.html')
+        check = User.objects.filter(username=request.POST['email']).exists()
+        if check:
+            messages.error(request, "Username already exists")
+            return redirect(request.META.get('HTTP_REFERER'))
+        
+        else:
+            username = request.POST['email']
+            password = request.POST['password']
+            email    = request.POST['email']
+            
+            ips      = [] if 'allowed_ips' not in request.POST else request.POST['allowed_ips'].split('\r\n')
+            ports    = [] if 'allowed_ports' not in request.POST else request.POST['allowed_ports'].split('\r\n')
+            # change ports from array to json
+            print(ips, ports)
+            
+            user = User.objects.create_user(username, email, password)
+            settings = UserSettings.objects.create(user=user, allowed_ip=ips, allowed_port=ports)
+            user.save()
+            settings.save()
+            
+            print(username, password, email)    
+            messages.success(request, "User created successfully")
+            return redirect(request.META.get('HTTP_REFERER'))
+        
     else:
-        return render(request, 'main/create_user.html')
+        redirect('users')
 
+@login_required
+def update_user(request):
+    if request.method == 'POST':
+        user_id  = request.POST['id']
+        password = request.POST['password']
+        user = User.objects.get(id=user_id)
+        
+        if password != '':
+            user = User.objects.get(id=user_id)
+            user.set_password(password)
+            user.save()
+        
+        
+        settings = UserSettings.objects.get(user=user)
+        
+        ips      = [] if 'allowed_ips' not in request.POST else request.POST['allowed_ips'].split('\r\n')
+        ports    = [] if 'allowed_ports' not in request.POST else request.POST['allowed_ports'].split('\r\n')
+        
+        settings.allowed_ip   = ips
+        settings.allowed_port = ports
+        
+        settings.save()
+        
+        messages.success(request, "User updated successfully")
+        return redirect(request.META.get('HTTP_REFERER'))
+        
+    else:
+        redirect('users')
+    
 
 ## login functions ##
 def login_page(request):

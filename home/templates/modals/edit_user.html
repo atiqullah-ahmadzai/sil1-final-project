@@ -1,0 +1,155 @@
+<div class="modal fade" id="updateUserModal" tabindex="-1" role="dialog" aria-labelledby="updateUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateUserModalLabel">Update User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateUserForm" action="users/update" method="POST">
+                    <input type="hidden" name="id" id="idInput" />
+                    <div class="form-group">
+                        <label for="updateEmail">Email</label>
+                        <input type="email" class="form-control" id="updateEmail" name="email" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePassword">Password (Leave blank for keeping the old password)</label>
+                        <input type="password" class="form-control" id="updatePassword" name="password" />
+                    </div>
+                    <div class="form-group">
+                        <label for="allowed_ips">Allowed IPs (Enter for new IP)</label>
+                        <input id="update_allowed_ips_check" type="checkbox" checked>
+                        <textarea class="form-control" id="updateAllowed_ips" name="allowed_ips" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="allowed_ports">Allowed Ports (Enter for new Port)</label>
+                        <input id="update_allowed_ports_check" type="checkbox" checked>
+                        <textarea class="form-control" id="updateAllowed_ports" name="allowed_ports" required></textarea>
+                    </div>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Update User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function(){
+        var update_ip_valid = true;
+        var update_port_valid = true;
+
+        function validateIP(ip){
+            var ipRegex = new RegExp("^([0-9]{1,3}\.){3}[0-9]{1,3}$");
+            return ipRegex.test(ip);
+        }
+        function validatePort(port){
+            // fix regex for port validation
+            var portRegex = new RegExp("^[0-9]{1,5}$");
+            return portRegex.test(port);
+        }
+
+        $("#editUserBtn").click(function(){
+            var id    = $(this).data("id");
+            var ip    = $(this).data("ip");
+            var port  = $(this).data("port");
+            var email = $(this).data("email");
+
+            if (ip == "") {
+                ip = "";
+            }
+            else
+            {
+                ip = eval(ip.replace(/'/g, '"')).join("\n");
+            }
+            if (port == "") {
+                port = "";
+            }
+            else
+            {
+                port = eval(port.replace(/'/g, '"')).join("\n");
+            }
+
+
+            $("#idInput").val(id);
+            $("#updateEmail").val(email);
+            $("#updateAllowed_ips").val(ip);
+            $("#updateAllowed_ports").val(port);
+            $("#updateUserModal").modal("show");
+
+        });
+
+
+        $("#update_allowed_ports_check").on("change",function(){
+            if($(this).is(":checked")){
+                $("#updateAllowed_ports").prop("disabled",false);
+            }else{
+                $("#updateAllowed_ports").prop("disabled",true);
+            }
+        });
+
+        $("#update_allowed_ips_check").on("change",function(){
+            if($(this).is(":checked")){
+                $("#updateAllowed_ips").prop("disabled",false);
+            }else{
+                $("#updateAllowed_ips").prop("disabled",true);
+            }
+        });
+
+
+        $("#updateAllowed_ips").on("change",function(){
+            //validate IPs by breaking lines and checking each line
+            var ips = $(this).val().split("\n");
+            var valid = true;
+            update_ip_valid = true;
+            for(var i=0;i<ips.length;i++){
+                if(ips[i].trim() == ""){
+                    continue;
+                }
+                if(!validateIP(ips[i].trim())){
+                    valid = false;
+                    update_ip_valid = false;
+                    break;
+                }
+            }
+            if(!valid)
+            {
+                toastr.error("Invalid IP Addresses");
+            }
+        });
+
+        $("#updateAllowed_ports").on("change",function(){
+            //validate Ports by breaking lines and checking each line
+            var ports = $(this).val().split("\n");
+            var valid = true;
+            update_port_valid = true;
+            for(var i=0;i<ports.length;i++){
+                if(ports[i].trim() == ""){
+                    continue;
+                }
+                if(!validatePort(ports[i].trim())){
+                    valid = false;
+                    update_port_valid = false;
+                    break;
+                }
+            }
+            if(!valid)
+            {
+                toastr.error("Invalid Ports");
+            }
+        });
+
+        $("#updateUserForm").on("submit",function(e){
+            if(!update_ip_valid || !update_port_valid){
+                e.preventDefault();
+                toastr.error("Invalid IP Addresses or Ports");
+            }
+            else
+            {
+                return true;
+            }
+        });
+    });
+</script>

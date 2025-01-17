@@ -28,7 +28,32 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.user.id }}</td>
+                                    <td>{{ user.user.email }}</td>
+                                    <td>{{ user.user.username }}</td>
+                                    <td>
+                                        {% for ip in user.allowed_ip %}
+                                        {{ ip }},
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for port in user.allowed_port %}
+                                        {{ port }},
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ user.created_at }}</td>
+                                    <td>
+                                        <a href="#" id="editUserBtn" class="btn btn-primary" data-id="{{user.user.id}}" data-port="{{user.allowed_port}}" data-ip="{{user.allowed_ip}}" data-email="{{user.user.email}}">Edit</a>
+                                        <a href="#" id="deleteUserBtn"  class="btn btn-danger">Delete</a>
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -36,6 +61,7 @@
         </div>
     </div>
     {% include 'modals/add_user.html' %}
+    {% include 'modals/edit_user.html' %}
     {% include 'partials/scripts.html' %}
 </body>
 </html>

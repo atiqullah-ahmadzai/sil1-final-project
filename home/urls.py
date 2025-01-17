@@ -21,5 +21,8 @@ urlpatterns = [
     path('stop_interface', views.stop_interface, name='stop_interface'),
     
     path('users', views.users, name='users'),
+    path('users/create', views.create_user, name='create_user'),
+    path('users/update', views.update_user, name='update_user'),
+    
     
 ]

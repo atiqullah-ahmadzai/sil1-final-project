@@ -36,8 +36,10 @@ class Settings(models.Model):
     
 class UserSettings(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    allowed_ip   = models.CharField(max_length=255, blank=True)
+    allowed_ip   = models.JSONField(blank=True)
     allowed_port = models.JSONField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"{self.user.username}'s Settings"
