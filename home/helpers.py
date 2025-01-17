@@ -164,3 +164,16 @@ def stop_cicflowmeter():
         
         
     return True
+
+
+def run_xdp_commands(command):
+    
+    command = command.split()
+    
+    try:
+        result = subprocess.run(command, check=True, text=True, capture_output=True)
+        return {"success":True, "message": result.stdout}
+    
+    except subprocess.CalledProcessError as e:
+        return {"success":False, "message": e.stderr}
+

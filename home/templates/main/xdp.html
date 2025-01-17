@@ -63,7 +63,7 @@
                                 <label for="">Force Update Firewall</label>
                             </div>
                             <div class="col-md-6">
-                                <button class="btn btn-warning btn-sm">Update</button>
+                                <button class="btn btn-warning btn-sm" id="force-update-btn">Update</button>
                             </div>
                         </div>
                        
@@ -74,5 +74,18 @@
         </div>
     </div>
     {% include 'partials/scripts.html' %}
+    <script>
+        $(document).ready(function(){
+            $("#force-update-btn").on("click",function(){
+                $.ajax({
+                    url: "/xdp/force_update",
+                    type: "GET",
+                    success: function(data){
+                        console.log(data);
+                    }
+                })
+            });
+        })
+    </script>
 </body>
 </html>

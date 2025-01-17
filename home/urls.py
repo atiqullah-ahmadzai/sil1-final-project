@@ -24,7 +24,8 @@ urlpatterns = [
     path('users/create', users.create_user, name='create_user'),
     path('users/update', users.update_user, name='update_user'),
     
-    path('xdp_settings', xdp.xdp_settings, name='xdp_settings'),
+    path('xdp/settings', xdp.xdp_settings, name='xdp_settings'),
+    path('xdp/force_update', xdp.force_update, name='force_update'),
     
     
 ]
