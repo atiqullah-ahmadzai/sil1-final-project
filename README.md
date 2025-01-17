@@ -59,3 +59,25 @@ python manage.py runserver
 ```sh
 cicflowmeter -i "WiFi 2" -u http://localhost:8000/post_flow
 ```
+
+## XDP Filter Commands Examples
+
+```shell
+# xdp-filter load eth0 -f tcp,udp
+# xdp-filter port 80
+```
+
+To filter all packets **except** those from IP address fc00:dead:cafe::1 issue the following commands (careful, this can lock you out of remote access!):
+
+```shell
+# xdp-filter load eth0 -f ipv6 -p deny
+# xdp-filter ip fc00:dead:cafe::1 -m src
+```
+
+To allow packets from **either** IP fc00:dead:cafe::1 **or** arriving on port 22, issue the following (careful, this can lock you out of remote access!):
+
+```shell
+# xdp-filter load eth0 -f ipv6,tcp -p deny
+# xdp-filter port 22
+# xdp-filter ip fc00:dead:cafe::1 -m src
+```
