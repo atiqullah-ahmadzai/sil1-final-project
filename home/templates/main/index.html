@@ -130,6 +130,7 @@
                     data: {
                         interface: selectedInterface,
                         model_name: modelName,
+                        csrfmiddlewaretoken: "{{ csrf_token }}"
                     },
                     success: function(response){
                         toastr["success"](response.message);
