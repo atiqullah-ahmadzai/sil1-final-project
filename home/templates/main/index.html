@@ -164,7 +164,7 @@
             function updateTable(){
                 $.ajax({
                     type: "GET",
-                    url: "http://localhost:8000/get_data?num_records="+$("#num-records").val(),
+                    url: "/get_data?num_records="+$("#num-records").val(),
                     success: function(response){
                         var records = response.data;
                         var tableBody = $("#recordsTable tbody");
