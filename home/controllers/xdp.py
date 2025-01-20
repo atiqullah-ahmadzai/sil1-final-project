@@ -28,9 +28,9 @@ def force_update(request):
     all_ips = UserSettings.objects.all()
     ip_list = []
     for ip in all_ips:
-        run_xdp_commands(f"xdp-filter ip {ip.current_ip}")
+        run_xdp_commands(f"xdp-filter ip {ip.current_ip} -m src,dst")
         for i in ip.allowed_ip:
-            run_xdp_commands(f"xdp-filter ip {i}")
+            run_xdp_commands(f"xdp-filter ip {i} -m src,dst")
 
     #rsp = run_xdp_commands("xdp-filter port 22")
     #rsp = run_xdp_commands("xdp-filter port 80")

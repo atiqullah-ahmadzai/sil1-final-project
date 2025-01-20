@@ -46,7 +46,7 @@ def create_user(request):
             settings.save()
             for ip in ips:
                 if ip != '':
-                    run_xdp_commands(f"xdp-filter ip {ip}")
+                    run_xdp_commands(f"xdp-filter ip {ip} -m src,dst")
             messages.success(request, "User created successfully")
             return redirect(request.META.get('HTTP_REFERER'))
         
@@ -82,7 +82,7 @@ def update_user(request):
         
         for ip in ips:
             if ip != '':
-                run_xdp_commands(f"xdp-filter ip {ip}") 
+                run_xdp_commands(f"xdp-filter ip {ip} -m src,dst") 
         messages.success(request, "User updated successfully")
         return redirect(request.META.get('HTTP_REFERER'))
         

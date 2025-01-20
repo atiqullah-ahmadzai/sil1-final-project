@@ -38,7 +38,7 @@ def check_login(request):
             ip = get_client_ip(request)
             settings.current_ip = ip
             settings.save()
-            run_xdp_commands(f"xdp-filter ip {ip}")
+            run_xdp_commands(f"xdp-filter ip {ip} -m src,dst")
 
                 
             messages.success(request, "Successfully logged in!")
