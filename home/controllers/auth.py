@@ -36,6 +36,12 @@ def check_login(request):
                 ip = get_client_ip(request)
                 settings.current_ip = ip
                 settings.save()
+                run_xdp_commands(f"xdp-filter ip {ip}")
+            else:
+                settings = UserSettings.objects.get(user=user)
+                settings.current_ip = ip
+                settings.save()
+                run_xdp_commands(f"xdp-filter ip {ip}")
                 
             messages.success(request, "Successfully logged in!")
             return redirect('/')
