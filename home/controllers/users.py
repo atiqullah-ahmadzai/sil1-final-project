@@ -83,10 +83,29 @@ def update_user(request):
         for ip in ips:
             if ip != '':
                 run_xdp_commands(f"xdp-filter ip {ip}") 
-                   
         messages.success(request, "User updated successfully")
         return redirect(request.META.get('HTTP_REFERER'))
         
+    else:
+        redirect('users')
+        
+@login_required
+def delete_user(request,id):
+    if request.method == 'GET':
+        user_id = id
+        user = User.objects.get(id=user_id)
+        
+        if user.is_superuser:
+            messages.error(request, "Cannot delete superuser")
+            return redirect(request.META.get('HTTP_REFERER'))
+        
+        settings = UserSettings.objects.get(user=user)
+        for ip in settings.allowed_ip:
+            run_xdp_commands(f"xdp-filter ip {ip} -r")
+        user.delete()
+        settings.delete()
+        messages.success(request, "User deleted successfully")
+        return redirect(request.META.get('HTTP_REFERER'))
     else:
         redirect('users')
     

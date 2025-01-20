@@ -47,7 +47,7 @@
                                     <td>{{ user.created_at }}</td>
                                     <td>
                                         <a href="#"  class="editUserBtn btn btn-primary" data-deip="{{user.detect_ip}}" data-id="{{user.user.id}}" data-port="{{user.allowed_port}}" data-ip="{{user.allowed_ip}}" data-email="{{user.user.email}}">Edit</a>
-                                        <a href="#"  class="deleteUserBtn btn btn-danger">Delete</a>
+                                        <a href="/users/delete/{{user.user.id}}"  class="deleteUserBtn btn btn-danger">Delete</a>
                                     </td>
                                     
                                 </tr>

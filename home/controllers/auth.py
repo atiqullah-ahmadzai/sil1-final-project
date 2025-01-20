@@ -30,18 +30,16 @@ def check_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            if username != "admin@admin.com":
-                settings = UserSettings.objects.get(user=user)
+            settings = UserSettings.objects.filter(user=user).first()
+            if not settings:
+                settings = UserSettings(user=user,allowed_ip=[],current_ip="", allowed_port=[])
+                settings.save()
+            
+            ip = get_client_ip(request)
+            settings.current_ip = ip
+            settings.save()
+            run_xdp_commands(f"xdp-filter ip {ip}")
 
-                ip = get_client_ip(request)
-                settings.current_ip = ip
-                settings.save()
-                run_xdp_commands(f"xdp-filter ip {ip}")
-            else:
-                settings = UserSettings.objects.get(user=user)
-                settings.current_ip = ip
-                settings.save()
-                run_xdp_commands(f"xdp-filter ip {ip}")
                 
             messages.success(request, "Successfully logged in!")
             return redirect('/')

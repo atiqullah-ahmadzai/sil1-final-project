@@ -23,6 +23,7 @@ urlpatterns = [
     path('users', users.users, name='users'),
     path('users/create', users.create_user, name='create_user'),
     path('users/update', users.update_user, name='update_user'),
+    path('users/delete/<int:id>', users.delete_user, name='delete_user'),
     
     path('xdp/settings', xdp.xdp_settings, name='xdp_settings'),
     path('xdp/force_update', xdp.force_update, name='force_update'),
