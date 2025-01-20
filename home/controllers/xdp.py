@@ -42,7 +42,7 @@ def xdp_status(request):
 
 @login_required
 def xdp_dump(request):
-    status = run_xdp_commands("xdp-filter dump")
+    status = run_xdp_commands("xdp-filter poll")
     return JsonResponse(status)
 
 @login_required
