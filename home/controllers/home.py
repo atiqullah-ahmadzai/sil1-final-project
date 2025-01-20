@@ -20,7 +20,6 @@ def home(request):
     interfaces = get_interfaces()
     return render(request, 'main/index.html', {'interfaces': interfaces})
 
-@login_required
 @api_view(['GET', 'POST'])
 def post_flow(request):
     if request.method == 'POST':
