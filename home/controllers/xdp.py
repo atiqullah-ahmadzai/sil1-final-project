@@ -20,7 +20,6 @@ from django.http import JsonResponse
 def xdp_settings(request):
     return render(request, 'main/xdp.html')
 
-@login_required
 def force_update(request):
     run_xdp_commands("xdp-filter unload eth0")
     rsp = run_xdp_commands("xdp-filter load eth0 -f ipv4,tcp -p deny")
