@@ -14,12 +14,15 @@ from home.decorators import login_required
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+
 
 @login_required
 def home(request):
     interfaces = get_interfaces()
     return render(request, 'main/index.html', {'interfaces': interfaces})
 
+@csrf_exempt
 @api_view(['GET', 'POST'])
 def post_flow(request):
     if request.method == 'POST':
