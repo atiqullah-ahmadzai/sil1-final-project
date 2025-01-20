@@ -23,7 +23,7 @@ def xdp_settings(request):
 @login_required
 def force_update(request):
     run_xdp_commands("xdp-filter unload eth0")
-    run_xdp_commands("xdp-filter load eth0 -f ipv4 -p deny && xdp-filter port 8000")
+    run_xdp_commands("xdp-filter load eth0 -f ipv4,tcp -p deny && xdp-filter port 8000 && xdp-filter port 22")
     all_ips = UserSettings.objects.all()
     ip_list = []
     for ip in all_ips:
@@ -45,7 +45,7 @@ def xdp_dump(request):
 
 @login_required
 def start_xdp(request):
-    rsp = run_xdp_commands("xdp-filter load eth0 -f ipv4 -p deny && xdp-filter port 8000")
+    rsp = run_xdp_commands("xdp-filter load eth0 -f ipv4,tcp -p deny && xdp-filter port 8000 && xdp-filter port 22")
     return JsonResponse(rsp)
 
 @login_required
