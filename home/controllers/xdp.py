@@ -28,6 +28,7 @@ def force_update(request):
     all_ips = UserSettings.objects.all()
     ip_list = []
     for ip in all_ips:
+        run_xdp_commands(f"xdp-filter ip {ip.current_ip}")
         for i in ip.allowed_ip:
             run_xdp_commands(f"xdp-filter ip {i}")
 
