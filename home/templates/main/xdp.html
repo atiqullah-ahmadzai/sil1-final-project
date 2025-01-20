@@ -11,12 +11,12 @@
             <div class="col-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">XDP Status
-                            <span style="float:right;margin-left:10px"> <button class="btn btn-primary btn-sm">Update</button></span>
+                        <h5 class="card-title">XDP Dump
+                            <span style="float:right;margin-left:10px"> <button class="btn btn-primary btn-sm" id="xdp-dump-btn">Update</button></span>
                         </h5>
                         
                         <div class="terminal">
-                            <div class="terminal-body">
+                            <div class="terminal-body xdp-dump">
                                 <pre>...</pre>
                             </div>
                         </div>
@@ -29,11 +29,11 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">XDP Status
-                            <span style="float:right;margin-left:10px"> <button class="btn btn-primary btn-sm">Update</button></span>
+                            <span style="float:right;margin-left:10px"> <button id="xdp-status-btn" class="btn btn-primary btn-sm">Update</button></span>
                         </h5>
                         
                         <div class="terminal">
-                            <div class="terminal-body">
+                            <div class="terminal-body xdp-status">
                                 <pre>...</pre>
                             </div>
                         </div>
@@ -54,7 +54,8 @@
                                 <label for="">Firewall Status</label>
                             </div>
                             <div class="col-md-6">
-                                <button class="btn btn-danger btn-sm">Stop</button>
+                                <button class="btn-xdp-stop btn btn-danger btn-sm">Stop</button>
+                                <button class="btn-xdp-start btn btn-success btn-sm">Start</button>
                             </div>
                         </div>
 
@@ -81,7 +82,75 @@
                     url: "/xdp/force_update",
                     type: "GET",
                     success: function(data){
-                        console.log(data);
+                        toastr.success("Firewall Updated Successfully");
+                    }
+                })
+            });
+
+            $("#xdp-status-btn").on("click",function(){
+                $.ajax({
+                    url: "/xdp/status",
+                    type: "GET",
+                    success: function(data){
+                        if (data.success == true)
+                        {
+                            $(".xdp-status pre").html(data.message);
+                        }
+                        else
+                        {
+                            $(".xdp-status pre").html(data.message);
+                        }
+
+                    }
+                })
+            });
+
+            $("#xdp-dump-btn").on("click",function(){
+                $.ajax({
+                    url: "/xdp/dump",
+                    type: "GET",
+                    success: function(data){
+                        if (data.success == true)
+                        {
+                            $(".xdp-dump pre").html(data.message);
+                        }
+                        else
+                        {
+                            $(".xdp-dump pre").html(data.message);
+                        }
+                    }
+                })
+            });
+
+            $(".btn-xdp-stop").on("click",function(){
+                $.ajax({
+                    url: "/xdp/stop",
+                    type: "GET",
+                    success: function(data){
+                        if (data.success == true)
+                        {
+                            toastr.success(data.message);
+                        }
+                        else
+                        {
+                            toastr.error(data.message);
+                        }
+                    }
+                })
+            });
+            $(".btn-xdp-start").on("click",function(){
+                $.ajax({
+                    url: "/xdp/start",
+                    type: "GET",
+                    success: function(data){
+                        if (data.success == true)
+                        {
+                            toastr.success(data.message);
+                        }
+                        else
+                        {
+                            toastr.error(data.message);
+                        }
                     }
                 })
             });

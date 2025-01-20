@@ -90,6 +90,7 @@ def get_data(request):
     settings["cic_status"] = check_cic_process()
     settings["interface"]  = get_config('interface')
     settings["model_name"] = get_config('model_name')
+    settings["current_ip"] = request.user.usersettings.current_ip
     
     rsp = {}
     rsp["data"]     = list(data)

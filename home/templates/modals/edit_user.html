@@ -28,6 +28,12 @@
                         <input id="update_allowed_ports_check" type="checkbox" checked>
                         <textarea class="form-control" id="updateAllowed_ports" name="allowed_ports" required></textarea>
                     </div>
+
+                    <div class="form-group">
+                        <label for="detect_ip">Auto Detect IP</label>
+                        <input id="update_detect_ip" value="1" name="detect_ip" type="checkbox">
+                    </div>
+
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">Update User</button>
                 </form>
@@ -51,11 +57,12 @@
             return portRegex.test(port);
         }
 
-        $("#editUserBtn").click(function(){
+        $(".editUserBtn").click(function(){
             var id    = $(this).data("id");
             var ip    = $(this).data("ip");
             var port  = $(this).data("port");
             var email = $(this).data("email");
+            var detect_ip = $(this).data("deip");
 
             if (ip == "") {
                 ip = "";
@@ -78,6 +85,14 @@
             $("#updateAllowed_ips").val(ip);
             $("#updateAllowed_ports").val(port);
             $("#updateUserModal").modal("show");
+            if (detect_ip == "True") {
+                $("#update_detect_ip").prop("checked",true);
+            }
+            else
+            {
+                $("#update_detect_ip").prop("checked",false);
+            }
+
 
         });
 
@@ -85,6 +100,7 @@
         $("#update_allowed_ports_check").on("change",function(){
             if($(this).is(":checked")){
                 $("#updateAllowed_ports").prop("disabled",false);
+                
             }else{
                 $("#updateAllowed_ports").prop("disabled",true);
             }
@@ -93,6 +109,7 @@
         $("#update_allowed_ips_check").on("change",function(){
             if($(this).is(":checked")){
                 $("#updateAllowed_ips").prop("disabled",false);
+                $("#update_detect_ip").prop("checked",false);
             }else{
                 $("#updateAllowed_ips").prop("disabled",true);
             }
@@ -149,6 +166,13 @@
             else
             {
                 return true;
+            }
+        });
+
+        $("#update_detect_ip").on("change",function(){
+            if($(this).is(":checked")){
+                $("#updateAllowed_ips").prop("disabled",true);
+                $("#update_allowed_ips_check").prop("checked",false);
             }
         });
     });

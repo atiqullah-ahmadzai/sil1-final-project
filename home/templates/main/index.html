@@ -203,6 +203,8 @@
                             if (response.settings.model_name != null && response.settings.model_name != "" && response.settings.model_name != "False"){
                                 $("#modelName").val(response.settings.model_name);
                             }
+
+                            $(".current-ip").text("Current IP: "+response.settings.current_ip);
                         }
                     });
                 }

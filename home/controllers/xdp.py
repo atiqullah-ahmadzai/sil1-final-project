@@ -22,8 +22,8 @@ def xdp_settings(request):
 
 @login_required
 def force_update(request):
-    #run_xdp_commands("xdp-filter unload eth0")
-    #run_xdp_commands("xdp-filter load eth0 -f ipv4 -p deny && xdp-filter port 8000")
+    run_xdp_commands("xdp-filter unload eth0")
+    run_xdp_commands("xdp-filter load eth0 -f ipv4 -p deny && xdp-filter port 8000")
     all_ips = UserSettings.objects.all()
     ip_list = []
     for ip in all_ips:
@@ -31,4 +31,25 @@ def force_update(request):
             run_xdp_commands(f"xdp-filter ip {i}")
 
     return JsonResponse({"message": "XDP filter updated successfully"})
+
+@login_required
+def xdp_status(request):
+    status = run_xdp_commands("xdp-filter status")
+    print(status)
+    return JsonResponse(status)
+
+@login_required
+def xdp_dump(request):
+    status = run_xdp_commands("xdp-filter dump")
+    return JsonResponse(status)
+
+@login_required
+def start_xdp(request):
+    rsp = run_xdp_commands("xdp-filter load eth0 -f ipv4 -p deny && xdp-filter port 8000")
+    return JsonResponse(rsp)
+
+@login_required
+def stop_xdp(request):
+    rsp = run_xdp_commands("xdp-filter unload eth0")
+    return JsonResponse(rsp)
 

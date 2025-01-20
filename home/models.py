@@ -38,6 +38,9 @@ class UserSettings(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     allowed_ip   = models.JSONField(blank=True)
     allowed_port = models.JSONField(blank=True)
+    detect_ip    = models.BooleanField(default=False)
+    current_ip   = models.CharField(max_length=100, default=None, null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

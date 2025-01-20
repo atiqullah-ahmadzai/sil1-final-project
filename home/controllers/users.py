@@ -35,15 +35,18 @@ def create_user(request):
             password = request.POST['password']
             email    = request.POST['email']
             
+            detect_ip    = False if "detect_ip" not in request.POST else True
             ips      = [] if 'allowed_ips' not in request.POST else request.POST['allowed_ips'].split('\r\n')
             ports    = [] if 'allowed_ports' not in request.POST else request.POST['allowed_ports'].split('\r\n')
             # change ports from array to json
             
             user = User.objects.create_user(username, email, password)
-            settings = UserSettings.objects.create(user=user, allowed_ip=ips, allowed_port=ports)
+            settings = UserSettings.objects.create(user=user, allowed_ip=ips, allowed_port=ports, detect_ip=detect_ip)
             user.save()
             settings.save()
-             
+            for ip in ips:
+                if ip != '':
+                    run_xdp_commands(f"xdp-filter ip {ip}")
             messages.success(request, "User created successfully")
             return redirect(request.META.get('HTTP_REFERER'))
         
@@ -64,15 +67,23 @@ def update_user(request):
         
         
         settings = UserSettings.objects.get(user=user)
+        for ip in settings.allowed_ip:
+            run_xdp_commands(f"xdp-filter ip {ip} -r")
         
         ips      = [] if 'allowed_ips' not in request.POST else request.POST['allowed_ips'].split('\r\n')
         ports    = [] if 'allowed_ports' not in request.POST else request.POST['allowed_ports'].split('\r\n')
+        detect_ip    = False if "detect_ip" not in request.POST else True
         
         settings.allowed_ip   = ips
         settings.allowed_port = ports
+        settings.detect_ip    = detect_ip
         
         settings.save()
         
+        for ip in ips:
+            if ip != '':
+                run_xdp_commands(f"xdp-filter ip {ip}") 
+                   
         messages.success(request, "User updated successfully")
         return redirect(request.META.get('HTTP_REFERER'))
         

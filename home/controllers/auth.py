@@ -30,6 +30,12 @@ def check_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            settings = UserSettings.objects.get(user=user)
+
+            ip = get_client_ip(request)
+            settings.current_ip = ip
+            settings.save()
+                
             messages.success(request, "Successfully logged in!")
             return redirect('/')
         else:

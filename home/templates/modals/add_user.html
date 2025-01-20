@@ -28,6 +28,12 @@
                         <input id="allowed_ports_check" type="checkbox">
                         <textarea class="form-control" id="allowed_ports" name="allowed_ports" required disabled></textarea>
                     </div>
+
+                    <div class="form-group">
+                        <label for="detect_ip">Auto Detect IP</label>
+                        <input id="detect_ip" name="detect_ip" type="checkbox">
+                    </div>
+                    
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">Add User</button>
                 </form>
@@ -101,6 +107,7 @@ $(document).ready(function(){
 
     $("#allowed_ips_check").on("change",function(){
         if($(this).is(":checked")){
+            $("#detect_ip").prop("checked",false);
             $("#allowed_ips").prop("disabled",false);
         }else{
             $("#allowed_ips").prop("disabled",true);
@@ -119,5 +126,11 @@ $(document).ready(function(){
         }
     });
 
+    $("#detect_ip").on("change",function(){
+        if($(this).is(":checked")){
+            $("#allowed_ips").prop("disabled",true);
+            $("#allowed_ips_check").prop("checked",false);
+        }
+    });
 });
 </script>

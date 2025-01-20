@@ -26,6 +26,10 @@ urlpatterns = [
     
     path('xdp/settings', xdp.xdp_settings, name='xdp_settings'),
     path('xdp/force_update', xdp.force_update, name='force_update'),
+    path('xdp/status', xdp.xdp_status, name='xdp_status'),
+    path('xdp/dump', xdp.xdp_dump, name='xdp_dump'),
+    path('xdp/start', xdp.start_xdp, name='start_xdp'),
+    path('xdp/stop', xdp.stop_xdp, name='stop_xdp'),
     
     
 ]
